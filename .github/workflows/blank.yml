@@ -1,0 +1,44 @@
+# This is a basic workflow to help you get started with Actions
+
+name: CI
+
+# Controls when the workflow will run
+on:
+  # Triggers the workflow on push or pull request events but only for the "main" branch
+  push:
+    branches: [ "main" ]
+  pull_request:
+    branches: [ "main" ]
+
+  # Allows you to run this workflow manually from the Actions tab
+  workflow_dispatch:
+
+# A workflow run is made up of one or more jobs that can run sequentially or in parallel
+jobs:
+  # This workflow contains a single job called "build"
+  fetch:
+    # The type of runner that the job will run on
+    runs-on: ubuntu-latest
+
+    # Steps represent a sequence of tasks that will be executed as part of the job
+    steps:
+      # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
+      - uses: actions/checkout@v4
+
+      # Runs a set of commands using the runners shell
+      - name: Run a multi-line script
+        run: |
+          echo fetch deps
+          apt install -y unzip
+          wget https://github.com/mgdm/htmlq/releases/download/v0.4.0/htmlq-x86_64-linux.tar.gz
+          tar -xzf htmlq-x86_64-linux.tar.gz
+          echo fetch opie
+          RELEASE=$(wget -q --user-agent="Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:130.0) Gecko/20100101 Firefox/130.0" -O - https://www.townlong-yak.com/addons/opie/release | ./htmlq '.c-link' | ./htmlq --attribute href a)
+          ZIP=$(wget -q --user-agent="Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:130.0) Gecko/20100101 Firefox/130.0" -O - "https://www.townlong-yak.com$RELEASE" | ./htmlq '.hg' | ./htmlq 'a' | grep -v 'c-link' | ./htmlq --attribute href a | head -n 1)
+          wget -q --user-agent="Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:130.0) Gecko/20100101 Firefox/130.0" -O opie.zip "https://www.townlong-yak.com$ZIP"
+          unzip -oq -d . opie.zip
+          rm opie.zip htmlq htmlq-x86_64-linux.tar.gz
+          echo commit
+
+      # Commit all changed files back to the repository
+      - uses: stefanzweifel/git-auto-commit-action@v5
