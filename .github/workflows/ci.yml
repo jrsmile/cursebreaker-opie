@@ -46,6 +46,7 @@ jobs:
           rm opie.zip htmlq htmlq-x86_64-linux.tar.gz
           cp -r ./OPie/* ./
           rm -rf ./OPie
+          git add --update --renormalize
       #find . -type f -path ./git -prune -print0 | xargs -0 dos2unix
 
       # Commit all changed files back to the repository
