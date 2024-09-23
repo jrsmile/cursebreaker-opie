@@ -45,7 +45,7 @@ jobs:
           unzip -oq -d . opie.zip
           rm opie.zip htmlq htmlq-x86_64-linux.tar.gz
           cp -r ./OPie/* ./
-          rm -rf ./Opie
+          rm -rf ./OPie
 
       # Commit all changed files back to the repository
       - name: Commit
