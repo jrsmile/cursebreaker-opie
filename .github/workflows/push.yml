@@ -1,0 +1,47 @@
+# description of this workflow, can be anything you want
+name: New Tag
+
+# allow commits
+permissions:
+    contents: write
+
+on:
+    # Triggers the workflow on push or pull request events but only for the "main" branch
+    push:
+        branches: [ "main" ]
+    pull_request:
+        branches: [ "main" ]
+    
+    # Allows you to run this workflow manually from the Actions tab
+    workflow_dispatch:
+
+jobs:
+    newtag:
+      runs-on: ubuntu-latest
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        GITHUB_OAUTH: ${{ secrets.GITHUB_TOKEN }}
+      steps:
+      - name: Get Retail TOC
+        id: vtoc
+        run: |-
+          echo "VERSION_TOC=$(curl -s "https://blizztrack.com/api/manifest/wow/versions" | jq -r '.result.data[0].version_name' | sed 's![^.]*$!!' | sed 's/\./0/g' | sed 's/.$//')" > $GITHUB_OUTPUT
+      
+      - name: Generate release tag
+        id: generate_release_tag
+        uses: alexvingg/next-release-tag@v1.0.4
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          tag_prefix: ${{steps.vtoc.outputs.VERSION_TOC}}.
+
+      - name: Create Release
+        uses: actions/create-release@v1
+        with:
+          tag_name: ${{ steps.generate_release_tag.outputs.release_tag }}
+          release_name: ${{ steps.generate_release_tag.outputs.release_tag }}
+
+      - name: Repository Dispatch
+        uses: peter-evans/repository-dispatch@v2
+        with:
+            token: ${{ secrets.GITHUB_TOKEN }}
+            event-type: my-new-release
