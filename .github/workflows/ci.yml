@@ -50,11 +50,12 @@ jobs:
           wget -q --user-agent="Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:130.0) Gecko/20100101 Firefox/130.0" -O opie.zip "https://www.townlong-yak.com$ZIP"
           unzip -oq -d . opie.zip
           rm opie.zip htmlq htmlq-x86_64-linux.tar.gz
-          mv ./OPie/* ./
-          echo commit
+          cp -r ./OPie/* ./
+          rm -rf ./Opie
 
       # Commit all changed files back to the repository
-      - uses: stefanzweifel/git-auto-commit-action@v5
+      - name: Commit
+        uses: stefanzweifel/git-auto-commit-action@v5
 
       # once cloned, we just run the GitHub Action for the packager project
       - name: Package and release
