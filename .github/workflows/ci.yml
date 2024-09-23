@@ -35,7 +35,7 @@ jobs:
       - name: Fetch
         run: |
           echo fetch deps
-          sudo apt-get install -y jq
+          sudo apt-get install -y jq dos2unix
           wget -q https://github.com/mgdm/htmlq/releases/download/v0.4.0/htmlq-x86_64-linux.tar.gz
           tar -xzf htmlq-x86_64-linux.tar.gz
           echo fetch opie
@@ -46,6 +46,7 @@ jobs:
           rm opie.zip htmlq htmlq-x86_64-linux.tar.gz
           cp -r ./OPie/* ./
           rm -rf ./OPie
+          find . -type f -print0 | xargs -0 dos2unix
 
       # Commit all changed files back to the repository
       - name: Commit
@@ -54,5 +55,3 @@ jobs:
       # once cloned, we just run the GitHub Action for the packager project
       - name: Package and release
         uses: BigWigsMods/packager@v2
-        with:
-          args: -u
