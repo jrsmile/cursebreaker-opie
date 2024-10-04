@@ -42,7 +42,7 @@ jobs:
           RELEASE=$(wget -q --user-agent="Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:130.0) Gecko/20100101 Firefox/130.0" -O - https://www.townlong-yak.com/addons/opie/release | ./htmlq '.c-link' | ./htmlq --attribute href a)
           ZIP=$(wget -q --user-agent="Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:130.0) Gecko/20100101 Firefox/130.0" -O - "https://www.townlong-yak.com$RELEASE" | ./htmlq '.hg' | ./htmlq 'a' | grep -v 'c-link' | ./htmlq --attribute href a | head -n 1)
           wget -q --user-agent="Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:130.0) Gecko/20100101 Firefox/130.0" -O opie.zip "https://www.townlong-yak.com$ZIP"
-          unzip -oqa -d . opie.zip
+          unzip -oq -aa -d . opie.zip
           rm opie.zip htmlq htmlq-x86_64-linux.tar.gz
           cp -r ./OPie/* ./
           rm -rf ./OPie
